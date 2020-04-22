@@ -46,7 +46,11 @@ func main() {
 
 			} else if err == nil {
 				// Value is a number
-				fmt.Printf("%v: %v\n", BrightRed(k), Cyan(v))
+				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
+
+			} else if (strings.ToLower(v) == "true") || (strings.ToLower(v) == "false") {
+				// the value is boolean
+				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
 
 			} else {
 				// Value is a word
