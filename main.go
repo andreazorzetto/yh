@@ -33,21 +33,23 @@ func main() {
 		// Line contains ":"
 		if strings.Contains(line, ":") {
 
-			k := strings.Split(line, ":")[0]
-			v := strings.TrimSpace(strings.Split(line, ":")[1])
+			lineSlice := strings.Split(line, ":")
+
+			k := lineSlice[0]
+			v := strings.TrimSpace(strings.Join(lineSlice[1:len(lineSlice)],":"))
 
 			_, err := strconv.Atoi(strings.ReplaceAll(v, ".", ""))
 
-			// Line is a comment
 			if string(strings.TrimSpace(k)[0]) == "#" {
+				// Line is a comment
 				fmt.Printf("%v %v\n", Gray(13, k), Gray(13, v))
 
-				// Value is a number
 			} else if err == nil {
+				// Value is a number
 				fmt.Printf("%v: %v\n", BrightRed(k), Cyan(v))
 
-				// Value is a word
 			} else {
+				// Value is a word
 				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
 
 			}
