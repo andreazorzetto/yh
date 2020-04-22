@@ -1,6 +1,6 @@
 # yh - YAML Highlighter
 
-Dummy YAML syntax highlighter to bring colour where only jq could so far.
+Dummy YAML syntax highlighter to bring colours where only jq could.
 
 Find the latest release here:
 
