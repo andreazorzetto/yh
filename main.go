@@ -27,9 +27,10 @@ func main() {
 		log.Println(err)
 	}
 
+        // Read lines of pasted YAML
 	for _, line := range text {
 
-		// Line doesn't contains ":"
+		// Line contains ":"
 		if strings.Contains(line, ":") {
 
 			k := strings.Split(line, ":")[0]
