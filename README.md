@@ -1,2 +1,4 @@
 # ylight
-Dummy YAML syntax highlighter make things colourful as only jq could do
+Dummy YAML syntax highlighter to make things colourful as only jq could do.
+
+Work in progress
