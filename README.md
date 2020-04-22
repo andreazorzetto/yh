@@ -12,4 +12,13 @@ Unable to find a simple YAML highlighter where he could just pipe some content w
 
 Make your life more colourful from here:
 
-https://github.com/andreazorzetto/yh/releases
+(MacOS only for now) https://github.com/andreazorzetto/yh/releases
+
+# Run it
+
+Example: 
+kubectl get pod alpine -o yaml | yh
+
+# Work in progress
+
+This project is still a work in progress and more improvements and docs will follow
