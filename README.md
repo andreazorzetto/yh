@@ -20,9 +20,13 @@ Make your life more colourful from here:
 
 - [Windows](https://github.com/andreazorzetto/yh/releases/download/v0.1.1/yh-win-amd64.zip)
 
-**Linux or Max**
+**Linux or MacOS**
+
+Unzip
 
 `unzip yh-<os>-<arch>.zip`
+
+Move the binary somewhere in your PATH
 
 `mv yh /usr/local/bin/`
 
