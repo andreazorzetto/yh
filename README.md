@@ -34,14 +34,17 @@ Move the binary somewhere in your PATH
 
 Like above but with your mouse
 
-# Run it
+# How to use
 
-### echo "yaml juice" | yh
-
-Example: 
+As easy as you secretly hoped
 
 `kubectl get pod alpine -o yaml | yh`
 
+Other commands:
+
+- `yh help`
+- `yh version`
+
 # Work in progress
 
-This project is still a work in progress. Essentialy works but more improvements and docs will follow
+This project is still a work in progress. It essentially works but more improvements and docs will follow. 
