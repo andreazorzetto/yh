@@ -27,16 +27,16 @@ func main() {
 		log.Println(err)
 	}
 
-        // Read lines of pasted YAML
 	for _, line := range text {
+		// Read lines of pasted YAML
 
-		// Line contains ":"
 		if strings.Contains(line, ":") {
+			// Line contains ":"
 
 			lineSlice := strings.Split(line, ":")
 
 			k := lineSlice[0]
-			v := strings.TrimSpace(strings.Join(lineSlice[1:len(lineSlice)],":"))
+			v := strings.TrimSpace(strings.Join(lineSlice[1:len(lineSlice)], ":"))
 
 			_, err := strconv.Atoi(strings.ReplaceAll(v, ".", ""))
 
@@ -57,17 +57,19 @@ func main() {
 				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
 
 			}
-			// Line doesn't contain ":"
 		} else {
-			// Line is a comment
+			// Line doesn't contain ":"
+
 			if string(strings.TrimSpace(line)[0]) == "#" {
+				// Line is a comment
 				fmt.Printf("%v\n", Gray(13, line))
 
-				// Line is an item of a list
 			} else if string(strings.TrimSpace(line)[0]) == "-" {
+				// Line is an item of a list
 				fmt.Printf("%v\n", Yellow(line))
-				// Line is not valid
+
 			} else {
+				// Line is not valid
 				fmt.Printf("%v\n", Black(line).BgBrightRed())
 			}
 		}
