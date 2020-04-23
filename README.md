@@ -8,6 +8,17 @@ Unable to find a simple YAML highlighter he could throw some content to, with li
 
 ![Comparison with or without yh](https://raw.githubusercontent.com/andreazorzetto/yh/master/images/comparison.png)
 
+# How to use
+
+As **easy** as you secretly hoped
+
+`kubectl get pod alpine -o yaml | yh`
+
+Other commands:
+
+- `yh help`
+- `yh version`
+
 # Download & installation
 
 Make your life more colourful from here:
@@ -30,17 +41,6 @@ Move the binary somewhere in your PATH
 **Windows**
 
 Like above but with your mouse
-
-# How to use
-
-As easy as you secretly hoped
-
-`kubectl get pod alpine -o yaml | yh`
-
-Other commands:
-
-- `yh help`
-- `yh version`
 
 # Work in progress
 
