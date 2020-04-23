@@ -18,7 +18,15 @@ Make your life more colourful from here:
 
 - [Windows](https://github.com/andreazorzetto/yh/releases/download/v0.1/yh-win-amd64.zip)
 
-Unzip `yh-osx-amd64.zip` and copy the binary in `/usr/local/bin` or somewhere else
+**Linux or Max**
+
+`unzip yh-<os>-<arch>.zip`
+
+`mv yh /usr/local/bin/`
+
+**Windows**
+
+Like above but with your mouse
 
 # Run it
 
