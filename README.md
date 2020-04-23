@@ -2,7 +2,7 @@
 
 Dummy YAML syntax highlighter to bring colours where only jq could.
 
-A bit of history. This project starts with the author's incapacity to give up on seeing colours while playing with kubernetes command line and YAML output (kubectl get something -o yaml) as would instead happen using JSON format.
+This project starts with the author's incapacity to give up on seeing colours while playing with kubernetes command line and YAML output (kubectl get something -o yaml) as would instead happen using JSON format.
 
 Unable to find a simple YAML highlighter where he could just pipe some content with little to none expectations, he decided to write one as an excuse for some Go training.
 
