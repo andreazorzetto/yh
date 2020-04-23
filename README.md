@@ -17,6 +17,8 @@ Unzip `yh-osx-amd64.zip` and copy the binary in `/usr/local/bin` or somewhere el
 
 # Run it
 
+### echo "yaml juice" | yh
+
 Example: 
 
 `kubectl get pod alpine -o yaml | yh`
