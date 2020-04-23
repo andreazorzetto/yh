@@ -1,6 +1,6 @@
 # yh - YAML Highlighter
 
-Dummy YAML syntax highlighter that brings colours where only jq could.
+Dummy YAML syntax highlighter brings colours where only jq could.
 
 This project starts with the author's incapacity to give up on the absence of colours while playing with kubernetes cli and YAML output (`kubectl get something -o yaml`) as would happen with JSON and jq.
 
