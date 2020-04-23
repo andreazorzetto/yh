@@ -11,6 +11,7 @@ Unable to find a simple YAML highlighter where he could just pipe some content w
 Make your life more colourful from here:
 
 MacOS - https://github.com/andreazorzetto/yh/releases/download/v0.1/yh-osx-amd64.zip
+
 more releases coming soon
 
 Unzip `yh-osx-amd64.zip` and copy the binary in `/usr/local/bin` or somewhere else
