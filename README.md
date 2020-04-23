@@ -6,6 +6,8 @@ This project starts with the author's incapacity to give up on not seeing colour
 
 Unable to find a simple YAML highlighter where he could just pipe some content with little to none expectations, he decided to write one as an excuse for some Go training.
 
+![Comparison with or without yh](https://raw.githubusercontent.com/andreazorzetto/yh/master/images/comparison.png)
+
 # Download & installation
 
 Make your life more colourful from here:
