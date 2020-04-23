@@ -55,10 +55,10 @@ func main() {
 			} else {
 				// Value is a word
 				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
-
 			}
-		} else {
-			// Line doesn't contain ":"
+
+		} else if len(strings.TrimSpace(line)) > 0 {
+			// Line doesn't contain ":" and it's not an empty line
 
 			if string(strings.TrimSpace(line)[0]) == "#" {
 				// Line is a comment
@@ -72,6 +72,10 @@ func main() {
 				// Line is not valid
 				fmt.Printf("%v\n", Black(line).BgBrightRed())
 			}
+
+		} else {
+			// Empty or spaces only line
+			fmt.Println(line)
 		}
 
 	}
