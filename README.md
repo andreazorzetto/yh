@@ -18,8 +18,6 @@ Make your life more colourful from here:
 
 - [Windows](https://github.com/andreazorzetto/yh/releases/download/v0.1/yh-win-amd64.zip)
 
-more releases coming soon
-
 Unzip `yh-osx-amd64.zip` and copy the binary in `/usr/local/bin` or somewhere else
 
 # Run it
