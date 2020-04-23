@@ -11,7 +11,14 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
+const version = "0.2.0"
+
 func main() {
+
+	// checking the args, someone out there might need help
+	checkArgs(os.Args)
+
+	// get the juice
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var text []string
@@ -27,6 +34,7 @@ func main() {
 		log.Println(err)
 	}
 
+	// parse the juice
 	for _, line := range text {
 		// Read lines of pasted YAML
 
@@ -80,4 +88,30 @@ func main() {
 
 	}
 
+}
+
+func checkArgs(a []string) {
+	if len(a) >= 2 {
+		// Someone's looking for...
+
+		if a[1] == "version" {
+			// version
+			fmt.Println(version)
+			os.Exit(0)
+
+		} else if a[1] == "help" {
+			// help
+			fmt.Println("You don't really need to read this! \nJust pipe me some YAML. I don't bite")
+			fmt.Println("\nExample:")
+			fmt.Println("\tkubectl get myNastyPod -o yaml | yh")
+			fmt.Println("\nCommands:")
+			fmt.Println("\thelp: get this helpful help")
+			fmt.Println("\tversion: get the version")
+			os.Exit(0)
+		} else {
+			// trolling
+			fmt.Println("Not really sure of what you want! Maybe try help or version.")
+			os.Exit(0)
+		}
+	}
 }
