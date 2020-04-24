@@ -11,7 +11,7 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-const version = "0.2.0"
+const version = "0.2.1"
 
 func main() {
 
@@ -34,11 +34,19 @@ func main() {
 		log.Println(err)
 	}
 
+	nextLineMaybeAComment := false
+	indentBeforeComment := 0
+
 	// parse the juice
 	for _, line := range text {
 		// Read lines of pasted YAML
 
-		if strings.Contains(line, ":") {
+		if (nextLineMaybeAComment == true) && (countIndentSpaces(line) > indentBeforeComment) {
+			// Found multiline comment or configmap, not treated as YAML at all
+
+			fmt.Printf("%v\n", Gray(4-1, line).BgGray(20-1))
+
+		} else if strings.Contains(line, ":") {
 			// Line contains ":"
 
 			lineSlice := strings.Split(line, ":")
@@ -65,6 +73,16 @@ func main() {
 				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
 			}
 
+			if containsChompingIndicator(v) {
+				// Found possible multiline comment or configmap
+				// If this check is validated with the next line the text is highlighted as multiline comment
+				nextLineMaybeAComment = true
+				indentBeforeComment = countIndentSpaces(line)
+
+			} else {
+				nextLineMaybeAComment = false
+			}
+
 		} else if len(strings.TrimSpace(line)) > 0 {
 			// Line doesn't contain ":" and it's not an empty line
 
@@ -80,6 +98,8 @@ func main() {
 				// Line is not valid
 				fmt.Printf("%v\n", Black(line).BgBrightRed())
 			}
+
+			nextLineMaybeAComment = false
 
 		} else {
 			// Empty or spaces only line
@@ -114,4 +134,31 @@ func checkArgs(a []string) {
 			os.Exit(0)
 		}
 	}
+}
+
+func countIndentSpaces(s string) int {
+	// This function checks how many indentation spaces where used
+	// before chomping indicator to catch a possible multiline comment or config
+	count := 0
+
+	for _, v := range s {
+		if string(v) == " " {
+			count += 1
+		} else {
+			break
+		}
+	}
+	return count
+}
+
+func containsChompingIndicator(s string) bool {
+	// this function checks for multline chomping indicator
+	indicators := []string{">", ">-", ">+", "|", "|-", "|+"}
+
+	for _, v := range indicators {
+		if strings.Contains(s, v) {
+			return true
+		}
+	}
+	return false
 }
