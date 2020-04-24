@@ -44,7 +44,7 @@ func main() {
 		if (nextLineMaybeAComment == true) && (countIndentSpaces(line) > indentBeforeComment) {
 			// Found multiline comment or configmap, not treated as YAML at all
 
-			fmt.Printf("%v\n", Gray(4-1, line).BgGray(20-1))
+			fmt.Printf("%v\n", Gray(20-1, line))
 
 		} else if strings.Contains(line, ":") {
 			// Line contains ":"
