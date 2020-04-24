@@ -21,7 +21,7 @@ Other commands:
 
 # Download & installation
 
-Make your life more colourful from here:
+Make your life more colourful starting from here:
 
 - [MacOS](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-osx-amd64.zip)
 - [Linux amd64](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-linux-amd64.zip)
