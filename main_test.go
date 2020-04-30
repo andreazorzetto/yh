@@ -5,8 +5,8 @@ import (
 )
 
 func TestIsKeyValue(t *testing.T) {
-	l := line{
-		line: "serviceAccount: hashicorp-consul-server",
+	l := yamlLine{
+		raw: "serviceAccount: hashicorp-consul-server",
 	}
 
 	if l.isKeyValue() != true {
@@ -15,8 +15,8 @@ func TestIsKeyValue(t *testing.T) {
 }
 
 func TestGetKeyValue(t *testing.T) {
-	l := line{
-		line: "foo: bar",
+	l := yamlLine{
+		raw: "foo: bar",
 	}
 
 	l.getKeyValue()
@@ -29,67 +29,166 @@ func TestGetKeyValue(t *testing.T) {
 	}
 }
 
-func TestIsNumberOrIP(t *testing.T) {
-	n := "657890"
-	f := "123123.12312"
-	ip := "127.0.0.1"
-	w := "test not a number"
-
-	if isNumberOrIP(n) != true {
-		t.Errorf("Expected true but got %v", isNumberOrIP(n))
-	}
-	if isNumberOrIP(f) != true {
-		t.Errorf("Expected true but got %v", isNumberOrIP(f))
-
-	}
-	if isNumberOrIP(ip) != true {
-		t.Errorf("Expected true but got %v", isNumberOrIP(ip))
-	}
-	if isNumberOrIP(w) != false {
-		t.Errorf("Expected false but got %v", isNumberOrIP(w))
-	}
-
-}
-
 func TestIsComment(t *testing.T) {
-	c1 := "\t#this is a comment"
-	c2 := "#this is another comment"
-	nc := "- item"
-
-	if isComment(c1) != true {
-		t.Errorf("Expected true but got %v", isComment(c1))
+	l := yamlLine{key: "\t#this is a comment"}
+	if l.isComment() != true {
+		t.Errorf("Expected true but got %v", l.isComment())
 	}
 
-	if isComment(c2) != true {
-		t.Errorf("Expected true but got %v", isComment(c2))
+	l = yamlLine{key: "#this is another comment"}
+	if l.isComment() != true {
+		t.Errorf("Expected true but got %v", l.isComment())
 	}
 
-	if isComment(nc) != false {
-		t.Errorf("Expected false but got %v", isComment(nc))
+	l = yamlLine{key: "- this is not a comment"}
+	if l.isComment() != false {
+		t.Errorf("Expected false but got %v", l.isComment())
 	}
 
 }
 
-func TestIsBoolean(t *testing.T) {
-	b1 := "true"
-	b2 := "false"
-	b3 := "False"
-	w := "asdasd"
-
-	if isBoolean(b1) != true {
-		t.Errorf("Expected true but got %v", isComment(b1))
+func TestValueIsBoolean(t *testing.T) {
+	l := yamlLine{value: "true"}
+	if l.valueIsBoolean() != true {
+		t.Errorf("Expected true but got %v", l.valueIsBoolean())
 	}
 
-	if isBoolean(b2) != true {
-		t.Errorf("Expected true but got %v", isComment(b2))
+	l = yamlLine{value: "false"}
+	if l.valueIsBoolean() != true {
+		t.Errorf("Expected true but got %v", l.valueIsBoolean())
 	}
 
-	if isBoolean(b3) != true {
-		t.Errorf("Expected true but got %v", isComment(b3))
+	l = yamlLine{value: "False"}
+	if l.valueIsBoolean() != true {
+		t.Errorf("Expected true but got %v", l.valueIsBoolean())
 	}
 
-	if isBoolean(w) != false {
-		t.Errorf("Expected false but got %v", isComment(w))
+	l = yamlLine{value: "not boolean"}
+	if l.valueIsBoolean() != false {
+		t.Errorf("Expected false but got %v", l.valueIsBoolean())
+	}
+
+}
+
+func TestValueIsNumberOrIP(t *testing.T) {
+	l := yamlLine{value: "657890"}
+	if l.valueIsNumberOrIP() != true {
+		t.Errorf("Expected true but got %v", l.valueIsNumberOrIP())
+	}
+
+	l = yamlLine{value: "123123.12312"}
+	if l.valueIsNumberOrIP() != true {
+		t.Errorf("Expected true but got %v", l.valueIsNumberOrIP())
+	}
+
+	l = yamlLine{value: "127.0.0.1"}
+	if l.valueIsNumberOrIP() != true {
+		t.Errorf("Expected true but got %v", l.valueIsNumberOrIP())
+	}
+
+	l = yamlLine{value: "test not a number"}
+	if l.valueIsNumberOrIP() != false {
+		t.Errorf("Expected false but got %v", l.valueIsNumberOrIP())
+	}
+
+}
+
+func TestIsEmptyLine(t *testing.T) {
+	l := yamlLine{raw: " "}
+
+	if l.isEmptyLine() != true {
+		t.Errorf("Expected true but got %v", l.isEmptyLine())
+	}
+
+	l = yamlLine{raw: `
+`}
+	if l.isEmptyLine() != true {
+		t.Errorf("Expected true but got %v", l.isEmptyLine())
+	}
+
+	l = yamlLine{raw: "\t \n"}
+	if l.isEmptyLine() != true {
+		t.Errorf("Expected true but got %v", l.isEmptyLine())
+	}
+
+	l = yamlLine{raw: "asdasd"}
+	if l.isEmptyLine() != false {
+		t.Errorf("Expected false but got %v", l.isEmptyLine())
+	}
+
+}
+
+func TestIsElementOfList(t *testing.T) {
+	l := yamlLine{raw: "- apple"}
+
+	if l.isElementOfList() != true {
+		t.Errorf("Expected true but got %v", l.isElementOfList())
+	}
+
+	l = yamlLine{raw: "- -apple"}
+	if l.isElementOfList() != true {
+		t.Errorf("Expected true but got %v", l.isElementOfList())
+	}
+
+	l = yamlLine{raw: "apple"}
+	if l.isElementOfList() != false {
+		t.Errorf("Expected false but got %v", l.isElementOfList())
+	}
+
+	l = yamlLine{raw: "apple-"}
+	if l.isElementOfList() != false {
+		t.Errorf("Expected false but got %v", l.isElementOfList())
+	}
+
+	//TODO: make this test pass
+	//l = yamlLine{ raw: "--apple"}
+	//if l.isElementOfList() != false {
+	//	t.Errorf("Expected false but got %v", l.isElementOfList())
+	//}
+
+}
+
+func TestIndentationSapces(t *testing.T) {
+	l := yamlLine{raw: "  foo: bar"}
+
+	if l.indentationSpaces() != 2 {
+		t.Errorf("Expected 2 but got %v", l.indentationSpaces())
+	}
+
+	l = yamlLine{raw: "    foo: bar"}
+
+	if l.indentationSpaces() != 4 {
+		t.Errorf("Expected 4 but got %v", l.indentationSpaces())
+	}
+
+	l = yamlLine{raw: "foo: bar"}
+
+	if l.indentationSpaces() != 0 {
+		t.Errorf("Expected 0 but got %v", l.indentationSpaces())
+	}
+
+}
+
+func TestValueContainsChompingIndicator(t *testing.T) {
+	l := yamlLine{value: "something >"}
+
+	if l.valueContainsChompingIndicator() != true {
+		t.Errorf("Expected true but got %v", l.valueContainsChompingIndicator())
+	}
+
+	l = yamlLine{value: "|-"}
+	if l.valueContainsChompingIndicator() != true {
+		t.Errorf("Expected true but got %v", l.valueContainsChompingIndicator())
+	}
+
+	l = yamlLine{value: "something |"}
+	if l.valueContainsChompingIndicator() != true {
+		t.Errorf("Expected true but got %v", l.valueContainsChompingIndicator())
+	}
+
+	l = yamlLine{value: "something --"}
+	if l.valueContainsChompingIndicator() != false {
+		t.Errorf("Expected false but got %v", l.valueContainsChompingIndicator())
 	}
 
 }
