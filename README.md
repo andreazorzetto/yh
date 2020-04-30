@@ -42,6 +42,6 @@ Move the binary somewhere in your PATH
 
 Like above but with your mouse
 
-# Work in progress
+# Future developments
 
-This project is still a work in progress. It essentially works but more improvements and docs will follow. 
+This project is still a work in progress and I'm considering different routes regarding improvements and new features. Every contribution or suggestion would be more than welcome. 
