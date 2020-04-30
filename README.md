@@ -44,4 +44,4 @@ Like above but with your mouse
 
 # Future developments
 
-This project is still a work in progress and I'm considering different routes regarding improvements and new features. Every contribution or suggestion would be more than welcome. 
+This project is still a work in progress and I'm considering different routes regarding improvements and new features. Anyone thinking to contribute or make suggestions/requests is more than welcome.
