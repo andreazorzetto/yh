@@ -9,24 +9,33 @@ import (
 const version = "0.3.0"
 
 func main() {
+	// Service vars
 	foundChompingIndicator := false
 	indentationSpacesBeforeComment := 0
 
-	// checking the args, someone out there might need help
+	// Checking the args, someone out there might need help
 	checkArgs(os.Args)
 
-	// get the juice
-	text, err := readTextFromStdin()
+	// Warm-up the engine
+	scanner := bufio.NewScanner(os.Stdin)
 
-	if err != nil {
-		println("Error:", err)
-		os.Exit(1)
-	}
+	// Get the juice
+	for scanner.Scan() {
 
-	// parse the juice
-	for _, line := range text {
+		if scanner.Text() == "EOF" {
+			break
+		}
 
-		l := yamlLine{raw: line}
+		// Check for errors during Stdin read
+		err := scanner.Err()
+
+		if err != nil {
+			println("Error:", err)
+			os.Exit(1)
+		}
+
+		// Drink the juice
+		l := yamlLine{raw: scanner.Text()}
 
 		if (foundChompingIndicator == true) && (l.indentationSpaces() > indentationSpacesBeforeComment) {
 			// Found multiline comment or configmap, not treated as YAML at all
@@ -103,23 +112,6 @@ func main() {
 
 	}
 
-}
-
-// Read all the text from Stdin and return as a []string
-func readTextFromStdin() ([]string, error) {
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	var text []string
-
-	for scanner.Scan() {
-		if scanner.Text() == "EOF" {
-			break
-		}
-		text = append(text, scanner.Text())
-	}
-
-	return text, scanner.Err()
 }
 
 // Check args if passed
