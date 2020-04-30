@@ -26,7 +26,7 @@ func (l *yamlLine) getKeyValue() {
 }
 
 func (l yamlLine) isComment() bool {
-	if string(strings.TrimSpace(l.key)[0]) == "#" {
+	if string(strings.TrimSpace(l.raw)[0]) == "#" {
 		// Line is a comment
 		return true
 	}

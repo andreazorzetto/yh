@@ -30,17 +30,17 @@ func TestGetKeyValue(t *testing.T) {
 }
 
 func TestIsComment(t *testing.T) {
-	l := yamlLine{key: "\t#this is a comment"}
+	l := yamlLine{raw: "\t#this is a comment"}
 	if l.isComment() != true {
 		t.Errorf("Expected true but got %v", l.isComment())
 	}
 
-	l = yamlLine{key: "#this is another comment"}
+	l = yamlLine{raw: "#this is another comment"}
 	if l.isComment() != true {
 		t.Errorf("Expected true but got %v", l.isComment())
 	}
 
-	l = yamlLine{key: "- this is not a comment"}
+	l = yamlLine{raw: "- this is not a comment"}
 	if l.isComment() != false {
 		t.Errorf("Expected false but got %v", l.isComment())
 	}
