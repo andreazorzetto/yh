@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-
-	. "github.com/logrusorgru/aurora"
 )
 
 const version = "0.3.0"
@@ -28,61 +26,78 @@ func main() {
 	// parse the juice
 	for _, line := range text {
 
-		l := yamlLine{
-			raw: line,
-		}
+		l := yamlLine{raw: line}
 
 		if (foundChompingIndicator == true) && (l.indentationSpaces() > indentationSpacesBeforeComment) {
 			// Found multiline comment or configmap, not treated as YAML at all
 
-			fmt.Printf("%v\n", Gray(20-1, l.raw))
+			printMultiline(l)
 
 		} else if l.isKeyValue() {
+			// This is a valid YAML key: value line
 
+			// Extract key and value in their own vars in the struct
 			l.getKeyValue()
 
 			if l.isComment() {
-				fmt.Printf("%v %v\n", Gray(13, l.key), Gray(13, l.value))
+				// This line is a comment
+
+				printComment(l)
 
 			} else if l.valueIsNumberOrIP() {
-				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
+				// The value is a number or an IP address x.x.x.x
+
+				printKeyNumberOrIP(l)
 
 			} else if l.valueIsBoolean() {
-				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
+				// The value is boolean true or false
+
+				printKeyBool(l)
 
 			} else {
-				// Value is a word
-				fmt.Printf("%v: %v\n", BrightRed(l.key), Yellow(l.value))
+				// The is a normal key/value line
+
+				printKeyValue(l)
 			}
 
 			if l.valueContainsChompingIndicator() {
-				// Found possible multiline comment or configmap
-				// If this check is validated with the next line the text is highlighted as multiline comment
+				// This line contains a chomping indicator, sign of a possible multiline text coming next
 
+				// Setting flag for next execution
 				foundChompingIndicator = true
+
+				// Saving current number of indentation spaces
 				indentationSpacesBeforeComment = l.indentationSpaces()
 
 			} else {
+				// Resetting multiline flag
 				foundChompingIndicator = false
 			}
 
 		} else if !l.isEmptyLine() {
+			// This is not a YAML key: value line and is not empty
 
 			if l.isComment() {
-				fmt.Printf("%v\n", Gray(13, l.raw))
+				// This line is a comment
+
+				printComment(l)
 
 			} else if l.isElementOfList() {
-				fmt.Printf("%v\n", Yellow(l.raw))
+				// This line is an element of a list
+
+				printListElement(l)
 
 			} else {
-				// Line is not valid
-				fmt.Printf("%v\n", Black(l.raw).BgBrightRed())
+				// This line is not valid YAML
+
+				printInvalidLine(l)
 			}
 
 			foundChompingIndicator = false
 
 		} else if l.isEmptyLine() {
-			// Empty or spaces only line
+			// This is an empty line
+
 			fmt.Println(l.raw)
 		}
 
@@ -90,8 +105,8 @@ func main() {
 
 }
 
+// Read all the text from Stdin and return as a []string
 func readTextFromStdin() ([]string, error) {
-	// Read all the text from Stdin and return as a []string
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -107,9 +122,9 @@ func readTextFromStdin() ([]string, error) {
 	return text, scanner.Err()
 }
 
+// Check args if passed
+// Show help
 func checkArgs(a []string) {
-	// Check args if passed
-	// Show help
 
 	if len(a) >= 2 {
 		// Someone's looking for...
