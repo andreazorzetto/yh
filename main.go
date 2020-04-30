@@ -13,6 +13,12 @@ import (
 
 const version = "0.2.1"
 
+type line struct {
+	line  string
+	key   string
+	value string
+}
+
 func main() {
 
 	// checking the args, someone out there might need help
@@ -38,76 +44,113 @@ func main() {
 	indentBeforeComment := 0
 
 	// parse the juice
-	for _, line := range text {
+	for _, read := range text {
 		// Read lines of pasted YAML
 
-		if (nextLineMaybeAComment == true) && (countIndentSpaces(line) > indentBeforeComment) {
+		l := line{
+			line: read,
+		}
+
+		if (nextLineMaybeAComment == true) && (countIndentSpaces(read) > indentBeforeComment) {
 			// Found multiline comment or configmap, not treated as YAML at all
 
-			fmt.Printf("%v\n", Gray(20-1, line))
+			fmt.Printf("%v\n", Gray(20-1, l.line))
 
-		} else if strings.Contains(line, ":") {
-			// Line contains ":"
+		} else if l.isKeyValue() {
 
-			lineSlice := strings.Split(line, ":")
+			l.getKeyValue()
 
-			k := lineSlice[0]
-			v := strings.TrimSpace(strings.Join(lineSlice[1:len(lineSlice)], ":"))
+			if isComment(l.key) {
+				fmt.Printf("%v %v\n", Gray(13, l.key), Gray(13, l.value))
 
-			_, err := strconv.Atoi(strings.ReplaceAll(v, ".", ""))
+			} else if isNumberOrIP(l.value) {
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
 
-			if string(strings.TrimSpace(k)[0]) == "#" {
-				// Line is a comment
-				fmt.Printf("%v %v\n", Gray(13, k), Gray(13, v))
-
-			} else if err == nil {
-				// Value is a number
-				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
-
-			} else if (strings.ToLower(v) == "true") || (strings.ToLower(v) == "false") {
-				// the value is boolean
-				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
+			} else if isBoolean(l.value) {
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
 
 			} else {
 				// Value is a word
-				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Yellow(l.value))
 			}
 
-			if containsChompingIndicator(v) {
+			if containsChompingIndicator(l.value) {
 				// Found possible multiline comment or configmap
 				// If this check is validated with the next line the text is highlighted as multiline comment
 				nextLineMaybeAComment = true
-				indentBeforeComment = countIndentSpaces(line)
+				indentBeforeComment = countIndentSpaces(l.line)
 
 			} else {
 				nextLineMaybeAComment = false
 			}
 
-		} else if len(strings.TrimSpace(line)) > 0 {
+		} else if len(strings.TrimSpace(l.line)) > 0 {
 			// Line doesn't contain ":" and it's not an empty line
 
-			if string(strings.TrimSpace(line)[0]) == "#" {
+			if string(strings.TrimSpace(l.line)[0]) == "#" {
 				// Line is a comment
-				fmt.Printf("%v\n", Gray(13, line))
+				fmt.Printf("%v\n", Gray(13, l.line))
 
-			} else if string(strings.TrimSpace(line)[0]) == "-" {
+			} else if string(strings.TrimSpace(l.line)[0]) == "-" {
 				// Line is an item of a list
-				fmt.Printf("%v\n", Yellow(line))
+				fmt.Printf("%v\n", Yellow(l.line))
 
 			} else {
 				// Line is not valid
-				fmt.Printf("%v\n", Black(line).BgBrightRed())
+				fmt.Printf("%v\n", Black(l.line).BgBrightRed())
 			}
 
 			nextLineMaybeAComment = false
 
 		} else {
 			// Empty or spaces only line
-			fmt.Println(line)
+			fmt.Println(l.line)
 		}
 
 	}
 
+}
+
+func (l line) isKeyValue() bool {
+	if strings.Contains(l.line, ":") {
+		return true
+	} else {
+		return false
+	}
+
+}
+
+func (l *line) getKeyValue() {
+	t := strings.Split(l.line, ":")
+
+	l.key = t[0]
+	l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ":"))
+}
+
+func isComment(s string) bool {
+	if string(strings.TrimSpace(s)[0]) == "#" {
+		// Line is a comment
+		return true
+	}
+	return false
+}
+
+func isBoolean(s string) bool {
+	if (strings.ToLower(s) == "true") || (strings.ToLower(s) == "false") {
+		// Line is a boolean value
+		return true
+	}
+	return false
+}
+
+func isNumberOrIP(s string) bool {
+	_, err := strconv.Atoi(strings.ReplaceAll(s, ".", ""))
+	if err == nil {
+		// Line is a number or IP
+		return true
+	} else {
+		return false
+	}
 }
 
 func checkArgs(a []string) {
