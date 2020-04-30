@@ -3,22 +3,96 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
-	"strconv"
-	"strings"
 
 	. "github.com/logrusorgru/aurora"
 )
 
-const version = "0.2.1"
+const version = "0.3.0"
 
 func main() {
+	foundChompingIndicator := false
+	indentationSpacesBeforeComment := 0
 
 	// checking the args, someone out there might need help
 	checkArgs(os.Args)
 
 	// get the juice
+	text, err := readTextFromStdin()
+
+	if err != nil {
+		println("Error:", err)
+		os.Exit(1)
+	}
+
+	// parse the juice
+	for _, line := range text {
+
+		l := yamlLine{
+			raw: line,
+		}
+
+		if (foundChompingIndicator == true) && (l.indentationSpaces() > indentationSpacesBeforeComment) {
+			// Found multiline comment or configmap, not treated as YAML at all
+
+			fmt.Printf("%v\n", Gray(20-1, l.raw))
+
+		} else if l.isKeyValue() {
+
+			l.getKeyValue()
+
+			if l.isComment() {
+				fmt.Printf("%v %v\n", Gray(13, l.key), Gray(13, l.value))
+
+			} else if l.valueIsNumberOrIP() {
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
+
+			} else if l.valueIsBoolean() {
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Blue(l.value))
+
+			} else {
+				// Value is a word
+				fmt.Printf("%v: %v\n", BrightRed(l.key), Yellow(l.value))
+			}
+
+			if l.valueContainsChompingIndicator() {
+				// Found possible multiline comment or configmap
+				// If this check is validated with the next line the text is highlighted as multiline comment
+
+				foundChompingIndicator = true
+				indentationSpacesBeforeComment = l.indentationSpaces()
+
+			} else {
+				foundChompingIndicator = false
+			}
+
+		} else if !l.isEmptyLine() {
+
+			if l.isComment() {
+				fmt.Printf("%v\n", Gray(13, l.raw))
+
+			} else if l.isElementOfList() {
+				fmt.Printf("%v\n", Yellow(l.raw))
+
+			} else {
+				// Line is not valid
+				fmt.Printf("%v\n", Black(l.raw).BgBrightRed())
+			}
+
+			foundChompingIndicator = false
+
+		} else if l.isEmptyLine() {
+			// Empty or spaces only line
+			fmt.Println(l.raw)
+		}
+
+	}
+
+}
+
+func readTextFromStdin() ([]string, error) {
+	// Read all the text from Stdin and return as a []string
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var text []string
@@ -30,87 +104,13 @@ func main() {
 		text = append(text, scanner.Text())
 	}
 
-	if err := scanner.Err(); err != nil {
-		log.Println(err)
-	}
-
-	nextLineMaybeAComment := false
-	indentBeforeComment := 0
-
-	// parse the juice
-	for _, line := range text {
-		// Read lines of pasted YAML
-
-		if (nextLineMaybeAComment == true) && (countIndentSpaces(line) > indentBeforeComment) {
-			// Found multiline comment or configmap, not treated as YAML at all
-
-			fmt.Printf("%v\n", Gray(20-1, line))
-
-		} else if strings.Contains(line, ":") {
-			// Line contains ":"
-
-			lineSlice := strings.Split(line, ":")
-
-			k := lineSlice[0]
-			v := strings.TrimSpace(strings.Join(lineSlice[1:len(lineSlice)], ":"))
-
-			_, err := strconv.Atoi(strings.ReplaceAll(v, ".", ""))
-
-			if string(strings.TrimSpace(k)[0]) == "#" {
-				// Line is a comment
-				fmt.Printf("%v %v\n", Gray(13, k), Gray(13, v))
-
-			} else if err == nil {
-				// Value is a number
-				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
-
-			} else if (strings.ToLower(v) == "true") || (strings.ToLower(v) == "false") {
-				// the value is boolean
-				fmt.Printf("%v: %v\n", BrightRed(k), Blue(v))
-
-			} else {
-				// Value is a word
-				fmt.Printf("%v: %v\n", BrightRed(k), Yellow(v))
-			}
-
-			if containsChompingIndicator(v) {
-				// Found possible multiline comment or configmap
-				// If this check is validated with the next line the text is highlighted as multiline comment
-				nextLineMaybeAComment = true
-				indentBeforeComment = countIndentSpaces(line)
-
-			} else {
-				nextLineMaybeAComment = false
-			}
-
-		} else if len(strings.TrimSpace(line)) > 0 {
-			// Line doesn't contain ":" and it's not an empty line
-
-			if string(strings.TrimSpace(line)[0]) == "#" {
-				// Line is a comment
-				fmt.Printf("%v\n", Gray(13, line))
-
-			} else if string(strings.TrimSpace(line)[0]) == "-" {
-				// Line is an item of a list
-				fmt.Printf("%v\n", Yellow(line))
-
-			} else {
-				// Line is not valid
-				fmt.Printf("%v\n", Black(line).BgBrightRed())
-			}
-
-			nextLineMaybeAComment = false
-
-		} else {
-			// Empty or spaces only line
-			fmt.Println(line)
-		}
-
-	}
-
+	return text, scanner.Err()
 }
 
 func checkArgs(a []string) {
+	// Check args if passed
+	// Show help
+
 	if len(a) >= 2 {
 		// Someone's looking for...
 
@@ -134,31 +134,4 @@ func checkArgs(a []string) {
 			os.Exit(0)
 		}
 	}
-}
-
-func countIndentSpaces(s string) int {
-	// This function checks how many indentation spaces where used
-	// before chomping indicator to catch a possible multiline comment or config
-	count := 0
-
-	for _, v := range s {
-		if string(v) == " " {
-			count += 1
-		} else {
-			break
-		}
-	}
-	return count
-}
-
-func containsChompingIndicator(s string) bool {
-	// this function checks for multline chomping indicator
-	indicators := []string{">", ">-", ">+", "|", "|-", "|+"}
-
-	for _, v := range indicators {
-		if strings.Contains(s, v) {
-			return true
-		}
-	}
-	return false
 }
