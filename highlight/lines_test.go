@@ -5,12 +5,21 @@ import (
 )
 
 func TestIsKeyValue(t *testing.T) {
-	l := yamlLine{
-		raw: "serviceAccount: hashicorp-consul-server",
+	l := yamlLine{raw: "serviceAccount: hashicorp-consul-server"}
+	if l.isKeyValue() != true {
+		t.Errorf("Expected True but got %v - %v%v", l.isKeyValue(), l.key, l.value)
 	}
 
-	if l.isKeyValue() != true {
-		t.Errorf("Expected True but got %v", l.isKeyValue())
+	l = yamlLine{raw: "https://github.com"}
+	if l.isKeyValue() != false {
+		t.Errorf("Expected False for URL but got %v", l.isKeyValue())
+	}
+
+	//Malformed line
+	l = yamlLine{raw: "serviceAccount:hashicorp-consul-server"}
+
+	if l.isKeyValue() != false {
+		t.Errorf("Expected False but got %v - %v%v", l.isKeyValue(), l.key, l.value)
 	}
 }
 
@@ -19,7 +28,7 @@ func TestGetKeyValue(t *testing.T) {
 		raw: "foo: bar",
 	}
 
-	l.getKeyValue()
+	l.isKeyValue()
 
 	if l.key != "foo" {
 		t.Errorf("Expected 'foo' but got %v", l.key)
@@ -191,4 +200,22 @@ func TestValueContainsChompingIndicator(t *testing.T) {
 		t.Errorf("Expected false but got %v", l.valueContainsChompingIndicator())
 	}
 
+}
+
+func TestIsURL(t *testing.T) {
+	l := yamlLine{raw: "https://github.com"}
+
+	if l.isUrl() != true {
+		t.Errorf("Expected True but got %v", l.isUrl())
+	}
+
+	l = yamlLine{raw: "https//github.com"}
+	if l.isUrl() != false {
+		t.Errorf("Expected False for malformed URL but got %v", l.isUrl())
+	}
+
+	l = yamlLine{raw: "randomValuesNotURL: //6574738:123"}
+	if l.isUrl() != false {
+		t.Errorf("Expected False but got %v", l.isUrl())
+	}
 }
