@@ -30,7 +30,7 @@ func (l *yamlLine) isKeyValue() bool {
 			*/
 
 			l.key = t[0]
-			l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ""))
+			l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ":"))
 			return true
 
 		} else if len(t) > 2 && (strings.HasPrefix(t[len(t)-1], " ") || len(t[len(t)-1]) == 0) {
