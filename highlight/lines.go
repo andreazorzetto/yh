@@ -22,14 +22,28 @@ func (l *yamlLine) isKeyValue() bool {
 
 		// Split the string
 		t := strings.Split(l.raw, ":")
-		l.key = t[0]
 
 		if strings.HasPrefix(t[1], " ") || len(t[1]) == 0 {
-			// Checking if it's either:
-			// - a proper k/v entry with a space after :
-			// - just key:\n
+			/* Checking if it's either:
+			- a proper k/v entry with a space after:
+			- just key:\n
+			*/
 
+			l.key = t[0]
 			l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ""))
+			return true
+
+		} else if len(t) > 2 && (strings.HasPrefix(t[len(t)-1], " ") || len(t[len(t)-1]) == 0) {
+			// Multiple : found, checking last one
+			/*
+				k:{"type":"Available"}:
+					.: {}
+					f:lastTransitionTime: {}
+					f:lastUpdateTime: {}
+			*/
+
+			l.key = strings.Join(t[0:len(t)-1], ":")
+			l.value = strings.TrimSpace(t[len(t)-1])
 			return true
 		}
 	}
