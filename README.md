@@ -21,12 +21,9 @@ Other commands:
 
 # Download & installation
 
-Make your life more colourful starting from here:
+Find the latest releases here:
 
-- [MacOS](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-osx-amd64.zip)
-- [Linux amd64](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-linux-amd64.zip)
-- [Linux 386](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-linux-386.zip)
-- [Windows](https://github.com/andreazorzetto/yh/releases/download/v0.2.1/yh-windows-amd64.zip)
+- [Releases](https://github.com/andreazorzetto/yh/releases)
 
 **Linux or MacOS**
 
