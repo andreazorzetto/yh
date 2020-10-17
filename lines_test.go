@@ -15,9 +15,18 @@ func TestIsKeyValue(t *testing.T) {
 		t.Errorf("Expected False for URL but got %v", l.isKeyValue())
 	}
 
+	l = yamlLine{raw: "f:deployment.kubernetes.io/revision: {}"}
+	if l.isKeyValue() != true {
+		t.Errorf("Expected True but got %v - '%v%v'", l.isKeyValue(), l.key, l.value)
+	}
+
+	l = yamlLine{raw: "k{\"type\"\"Progressing\"}:"}
+	if l.isKeyValue() != true {
+		t.Errorf("Expected True but got %v - '%v%v'", l.isKeyValue(), l.key, l.value)
+	}
+
 	//Malformed line
 	l = yamlLine{raw: "serviceAccount:hashicorp-consul-server"}
-
 	if l.isKeyValue() != false {
 		t.Errorf("Expected False but got %v - %v%v", l.isKeyValue(), l.key, l.value)
 	}

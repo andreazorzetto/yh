@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const version = "0.3.1"
+const version = "0.3.2"
 
 func main() {
 	// Service vars
