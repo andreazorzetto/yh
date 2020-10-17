@@ -11,18 +11,30 @@ type yamlLine struct {
 	value string
 }
 
-func (l yamlLine) isKeyValue() bool {
-	if strings.Contains(l.raw, ":") {
-		return true
+func (l *yamlLine) isKeyValue() bool {
+	if strings.Contains(l.raw, "://") {
+		// It's a URL not k/v
+
+		return false
+
+	} else if strings.Contains(l.raw, ":") {
+		// Contains the separator but it might not be a k/v
+
+		// Split the string
+		t := strings.Split(l.raw, ":")
+		l.key = t[0]
+
+		if strings.HasPrefix(t[1], " ") || len(t[1]) == 0 {
+			// Checking if it's either:
+			// - a proper k/v entry with a space after :
+			// - just key:\n
+
+			l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ""))
+			return true
+		}
 	}
 	return false
-}
 
-func (l *yamlLine) getKeyValue() {
-	t := strings.Split(l.raw, ":")
-
-	l.key = t[0]
-	l.value = strings.TrimSpace(strings.Join(t[1:len(t)], ":"))
 }
 
 func (l yamlLine) isComment() bool {
@@ -59,6 +71,13 @@ func (l yamlLine) isEmptyLine() bool {
 
 func (l yamlLine) isElementOfList() bool {
 	if string(strings.TrimSpace(l.raw)[0]) == "-" {
+		return true
+	}
+	return false
+}
+
+func (l yamlLine) isUrl() bool {
+	if strings.Contains(l.raw, "://") {
 		return true
 	}
 	return false

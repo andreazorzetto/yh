@@ -32,3 +32,7 @@ func printInvalidLine(l yamlLine) {
 func printMultiline(l yamlLine) {
 	fmt.Printf("%v\n", Gray(20-1, l.raw))
 }
+
+func printUrl(l yamlLine) {
+	fmt.Printf("%v\n", Yellow(l.raw))
+}

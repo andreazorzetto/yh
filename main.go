@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const version = "0.3.0"
+const version = "0.3.1"
 
 func main() {
 	// Service vars
@@ -43,10 +43,7 @@ func main() {
 			printMultiline(l)
 
 		} else if l.isKeyValue() {
-			// This is a valid YAML key: value line
-
-			// Extract key and value in their own vars in the struct
-			l.getKeyValue()
+			// This is a valid YAML key: value line. Key and value are returned in l
 
 			if l.isComment() {
 				// This line is a comment
@@ -86,7 +83,12 @@ func main() {
 		} else if !l.isEmptyLine() {
 			// This is not a YAML key: value line and is not empty
 
-			if l.isComment() {
+			if l.isUrl() {
+				// The value is boolean true or false
+
+				printUrl(l)
+
+			} else if l.isComment() {
 				// This line is a comment
 
 				printComment(l)
