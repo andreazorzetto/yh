@@ -38,10 +38,7 @@ func Highlight(r io.Reader) (string, error) {
 			buf.WriteString(multiline(l))
 
 		} else if l.isKeyValue() {
-			// This is a valid YAML key: value line
-
-			// Extract key and value in their own vars in the struct
-			l.getKeyValue()
+			// This is a valid YAML key: value line. Key and value are returned in l
 
 			if l.isComment() {
 				// This line is a comment
@@ -75,7 +72,12 @@ func Highlight(r io.Reader) (string, error) {
 
 		} else if !l.isEmptyLine() {
 			// This is not a YAML key: value line and is not empty
-			if l.isComment() {
+
+			if l.isUrl() {
+				// Value is a URL
+				buf.WriteString(url(l))
+
+			} else if l.isComment() {
 				// This line is a comment
 				buf.WriteString(comment(l))
 			} else if l.isElementOfList() {
@@ -124,4 +126,8 @@ func invalidLine(l yamlLine) string {
 
 func multiline(l yamlLine) string {
 	return fmt.Sprintf("%v\n", Gray(20-1, l.raw))
+}
+
+func url(l yamlLine) string {
+	return fmt.Sprintf("%v\n", Yellow(l.raw))
 }
