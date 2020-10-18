@@ -76,7 +76,6 @@ func Highlight(r io.Reader) (string, error) {
 			if l.isUrl() {
 				// Value is a URL
 				buf.WriteString(url(l))
-
 			} else if l.isComment() {
 				// This line is a comment
 				buf.WriteString(comment(l))
@@ -127,7 +126,6 @@ func invalidLine(l yamlLine) string {
 func multiline(l yamlLine) string {
 	return fmt.Sprintf("%v\n", Gray(20-1, l.raw))
 }
-
 func url(l yamlLine) string {
 	return fmt.Sprintf("%v\n", Yellow(l.raw))
 }
