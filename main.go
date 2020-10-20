@@ -8,7 +8,7 @@ import (
 	"github.com/andreazorzetto/yh/highlight"
 )
 
-const version = "0.3.3"
+const version = "0.4.0"
 
 func main() {
 	log.SetFlags(0) // disable timestamp of log package
