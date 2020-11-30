@@ -25,6 +25,10 @@ Find the latest releases here:
 
 - [Releases](https://github.com/andreazorzetto/yh/releases)
 
+**Brew**
+
+`brew install yh`
+
 **Linux or MacOS**
 
 Unzip
