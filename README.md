@@ -27,7 +27,10 @@ Find the latest releases here:
 
 **Brew**
 
-`brew install yh`
+```
+brew tap gregbook/yh
+brew install yh
+```
 
 **Linux or MacOS**
 
